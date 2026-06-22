@@ -2,7 +2,7 @@
 
 **A daily Bronze → Silver → Gold data pipeline that turns a competitor's product catalog into pricing and assortment intelligence.**
 
-> Built as a self-contained simulation of a real competitor-monitoring system: same engineering patterns (layered storage, incremental detection, data quality gates, observability) you'd find on a retail analytics team — running against a live e-commerce catalog as the data source.
+> Built as a self-contained simulation of a real competitor-monitoring system: same engineering patterns (layered storage, incremental detection, data quality gates, observability) you'd find on a retail analytics team — running against a live e-commerce catalog as the data source. (For Dicoding Belajar Pemrosesan Data Final projects)
 
 ---
 
@@ -141,7 +141,10 @@ pytest tests/ -v                              # 77 tests
 pytest tests/ --cov=src --cov-report=term-missing   # coverage report
 ```
 
-Each run writes a timestamped log to `logs/pipeline_<run_id>.log` and prints a step-by-step OK/FAILED summary to the console.
+Each run writes a timestamped log to `logs/pipeline_<run_id>.log` and prints a step-by-step OK/FAILED summary to the console. See the result at 
+- https://docs.google.com/spreadsheets/d/14KKzjaFWVU2ChqRTX0Q7g49Yj7CDgdUYioAIP6DO0i0/edit?gid=1101897011#gid=1101897011 (Google Sheets)
+- products.csv (Excel)
+- Postgre (Screenshoot)
 
 ## 📈 Sample Insights
 
