@@ -1,0 +1,17 @@
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+
+# Berkas hasil generate pipeline (boleh di-regenerate kapan saja)
+data/bronze/*.csv
+data/silver/history/*.csv
+data/silver/latest.csv
+data/gold/*.csv
+data/gold/*.json
+logs/*.log
+products.csv
+
+# Kredensial -- JANGAN PERNAH commit kredensial asli ke repo publik
+google-sheets-api.json

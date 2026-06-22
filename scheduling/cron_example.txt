@@ -1,0 +1,17 @@
+# Contoh penjadwalan pipeline dengan cron
+# ------------------------------------------
+# Menjalankan pipeline setiap hari jam 03:00 pagi (waktu server),
+# meniru jadwal "daily batch job" yang umum dipakai untuk pipeline
+# competitor intelligence / price monitoring.
+
+# Edit crontab dengan: crontab -e
+# Lalu tambahkan baris berikut (sesuaikan path venv & project):
+
+0 3 * * * cd /path/to/fashion-competitor-intelligence && /path/to/venv/bin/python main.py >> logs/cron.log 2>&1
+
+# Penjelasan format cron (menit jam tanggal bulan hari):
+#   0 3 * * *  -> jalan setiap hari jam 03:00
+#
+# Untuk monitoring sederhana, semua output (stdout & stderr) diarahkan
+# ke logs/cron.log selain log per-run yang sudah otomatis dibuat oleh
+# main.py sendiri di folder logs/.
