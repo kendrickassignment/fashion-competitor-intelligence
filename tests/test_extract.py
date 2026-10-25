@@ -1,210 +1,106 @@
-"""
-test_extract.py
-----------------
-Unit test untuk modul utils/extract.py.
-
-Seluruh pengujian yang melibatkan request HTTP menggunakan mock
-(unittest.mock) sehingga tidak memerlukan koneksi internet sungguhan
-ke https://fashion-studio.dicoding.dev/.
-"""
-
-import sys
-import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import Mock
 
 import pytest
 import requests
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from src.extract import (
-    build_page_url,
-    fetch_page,
-    parse_product_card,
-    parse_page,
-    scrape_main,
-    BASE_URL,
-)
-from tests.fixtures import SAMPLE_PAGE_HTML, EMPTY_PAGE_HTML
-from bs4 import BeautifulSoup
+from src import extract
+from src.errors import ExtractionError
 
 
-# ---------------------------------------------------------------------
-# build_page_url
-# ---------------------------------------------------------------------
-
-def test_build_page_url_first_page():
-    url = build_page_url(1)
-    assert url == f"{BASE_URL}/"
+@pytest.mark.parametrize("page,suffix", [(1, "/"), (2, "/page2"), (50, "/page50")])
+def test_page_urls(page, suffix):
+    assert extract.build_page_url(page) == extract.BASE_URL + suffix
 
 
-def test_build_page_url_other_page():
-    url = build_page_url(5)
-    assert url == f"{BASE_URL}/page5"
+@pytest.mark.parametrize("page", [0, -1, 51, None, "2", True, 1.5])
+def test_invalid_page(page):
+    with pytest.raises(ExtractionError):
+        extract.build_page_url(page)
 
 
-def test_build_page_url_invalid_number_returns_none():
-    assert build_page_url(0) is None
-    assert build_page_url(-3) is None
-    assert build_page_url(None) is None
+def test_retry_policy_and_session_failure(monkeypatch):
+    session = extract.build_session()
+    retry = session.get_adapter("https://").max_retries
+    assert retry.total == 3
+    assert 429 in retry.status_forcelist and retry.respect_retry_after_header
+    assert retry.allowed_methods == ["GET"]
+    session.close()
+    monkeypatch.setattr(extract.requests, "Session", Mock(side_effect=OSError))
+    with pytest.raises(ExtractionError):
+        extract.build_session()
 
 
-# ---------------------------------------------------------------------
-# fetch_page
-# ---------------------------------------------------------------------
-
-def test_fetch_page_success():
-    mock_session = MagicMock()
-    mock_response = MagicMock()
-    mock_response.text = "<html>ok</html>"
-    mock_response.raise_for_status.return_value = None
-    mock_session.get.return_value = mock_response
-
-    result = fetch_page("https://fashion-studio.dicoding.dev/", session=mock_session)
-
-    assert result == "<html>ok</html>"
-    mock_session.get.assert_called_once()
+def test_fetch_success_timeout_and_http_error():
+    session = Mock()
+    session.get.return_value.content = b"ok"
+    assert extract.fetching_content("https://example.invalid", session) == b"ok"
+    session.get.assert_called_once_with("https://example.invalid", timeout=(10, 30))
+    session.get.side_effect = requests.Timeout("connection secret must not leak")
+    with pytest.raises(ExtractionError, match="HTTP request failed"):
+        extract.fetching_content("https://example.invalid", session)
 
 
-def test_fetch_page_handles_request_exception():
-    mock_session = MagicMock()
-    mock_session.get.side_effect = requests.exceptions.ConnectionError("network down")
-
-    result = fetch_page("https://fashion-studio.dicoding.dev/", session=mock_session)
-
-    assert result is None
-
-
-def test_fetch_page_handles_http_error():
-    mock_session = MagicMock()
-    mock_response = MagicMock()
-    mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError("404")
-    mock_session.get.return_value = mock_response
-
-    result = fetch_page("https://fashion-studio.dicoding.dev/page999", session=mock_session)
-
-    assert result is None
+@pytest.mark.parametrize("failure", [requests.HTTPError("503"), None])
+def test_http_error_or_empty_body(failure):
+    session = Mock()
+    session.get.return_value.raise_for_status.side_effect = failure
+    session.get.return_value.content = b""
+    with pytest.raises(ExtractionError):
+        extract.fetching_content("https://example.invalid", session)
 
 
-def test_fetch_page_handles_unexpected_exception():
-    mock_session = MagicMock()
-    mock_session.get.side_effect = ValueError("unexpected")
-
-    result = fetch_page("https://fashion-studio.dicoding.dev/", session=mock_session)
-
-    assert result is None
-
-
-# ---------------------------------------------------------------------
-# parse_product_card
-# ---------------------------------------------------------------------
-
-def _get_cards(html):
-    soup = BeautifulSoup(html, "html.parser")
-    return soup.find_all("div", class_="collection-card")
+@pytest.mark.parametrize("unavailable", [False, True])
+def test_parser_two_price_tags_and_label_order(html_page, unavailable):
+    rows = extract.parse_page(html_page(unavailable=unavailable), "now", 1)
+    assert len(rows) == 20
+    assert rows[0]["Price"] == ("Price Unavailable" if unavailable else "$102.15")
+    assert rows[0]["Colors"] == "3 Colors"
+    assert rows[0]["Gender"] == "Gender: Women"
+    assert rows[0]["source_page"] == 1
 
 
-def test_parse_product_card_valid_product():
-    cards = _get_cards(SAMPLE_PAGE_HTML)
-    result = parse_product_card(cards[1], timestamp="2026-06-17T00:00:00")
-
-    assert result["Title"] == "T-shirt 2"
-    assert result["Price"] == "$102.15"
-    assert "3.9" in result["Rating"]
-    assert result["Colors"] == "3 Colors"
-    assert result["Size"] == "Size: M"
-    assert result["Gender"] == "Gender: Women"
-    assert result["timestamp"] == "2026-06-17T00:00:00"
+def test_parser_missing_fields_are_quarantinable(html_page):
+    html = html_page(missing_title=True).replace(b'<span class="price">$102.15</span>', b"")
+    row = extract.parse_page(html, "now", 1)[0]
+    assert row["Title"] is None and row["Price"] is None
 
 
-def test_parse_product_card_unknown_product():
-    cards = _get_cards(SAMPLE_PAGE_HTML)
-    result = parse_product_card(cards[0], timestamp="2026-06-17T00:00:00")
-
-    assert result["Title"] == "Unknown Product"
-    assert result["Price"] == "$100.00"
-    assert "Invalid Rating" in result["Rating"]
+@pytest.mark.parametrize("count", [0, 19, 21])
+def test_parser_rejects_layout_drift(html_page, count):
+    with pytest.raises(ExtractionError):
+        extract.parse_page(html_page(count=count), "now", 1)
 
 
-def test_parse_product_card_price_unavailable():
-    cards = _get_cards(SAMPLE_PAGE_HTML)
-    result = parse_product_card(cards[2], timestamp="2026-06-17T00:00:00")
-
-    assert result["Title"] == "Pants 16"
-    assert result["Price"] == "Price Unavailable"
-    assert "Not Rated" in result["Rating"]
-    assert result["Colors"] == "8 Colors"
-
-
-def test_parse_product_card_handles_malformed_card_gracefully():
-    # Objek bukan elemen BeautifulSoup yang valid -> harus memicu
-    # exception internal yang ditangani dan mengembalikan None.
-    broken_card = object()
-    result = parse_product_card(broken_card, timestamp="2026-06-17T00:00:00")
-    assert result is None
+def test_all_pages_timestamp_lineage_and_caller_owned_session(html_page, monkeypatch):
+    session = Mock()
+    session.get.side_effect = [Mock(content=html_page(page=i)) for i in range(1, 51)]
+    sleep = Mock()
+    monkeypatch.setattr(extract.time, "sleep", sleep)
+    rows = extract.scrape_main(50, session=session)
+    assert len(rows) == 1000
+    assert set(rows.source_page) == set(range(1, 51))
+    assert rows.timestamp.str.contains("T").all()
+    assert session.get.call_count == 50 and sleep.call_count == 49
+    session.close.assert_not_called()
 
 
-# ---------------------------------------------------------------------
-# parse_page
-# ---------------------------------------------------------------------
-
-def test_parse_page_returns_all_cards():
-    results = parse_page(SAMPLE_PAGE_HTML, timestamp="2026-06-17T00:00:00")
-    assert len(results) == 4
-    titles = [r["Title"] for r in results]
-    assert "T-shirt 2" in titles
-    assert "Hoodie 3" in titles
-
-
-def test_parse_page_empty_collection_returns_empty_list():
-    results = parse_page(EMPTY_PAGE_HTML, timestamp="2026-06-17T00:00:00")
-    assert results == []
+def test_owned_session_closed_after_success_and_failure(html_page, monkeypatch):
+    session = Mock()
+    session.get.return_value.content = html_page()
+    monkeypatch.setattr(extract, "build_session", Mock(return_value=session))
+    extract.scrape_main(1)
+    session.close.assert_called_once()
+    session.reset_mock()
+    session.get.side_effect = requests.ConnectionError()
+    with pytest.raises(ExtractionError):
+        extract.scrape_main(1)
+    session.close.assert_called_once()
 
 
-def test_parse_page_handles_empty_html_string():
-    results = parse_page("", timestamp="2026-06-17T00:00:00")
-    assert results == []
-
-
-def test_parse_page_handles_none_html():
-    results = parse_page(None, timestamp="2026-06-17T00:00:00")
-    assert results == []
-
-
-# ---------------------------------------------------------------------
-# scrape_main
-# ---------------------------------------------------------------------
-
-@patch("src.extract.fetch_page")
-def test_scrape_main_aggregates_multiple_pages(mock_fetch_page):
-    mock_fetch_page.side_effect = [SAMPLE_PAGE_HTML, SAMPLE_PAGE_HTML, EMPTY_PAGE_HTML]
-
-    results = scrape_main(total_pages=3, delay=0)
-
-    assert len(results) == 8  # 4 produk x 2 halaman berisi data
-    assert mock_fetch_page.call_count == 3
-
-
-@patch("src.extract.fetch_page")
-def test_scrape_main_skips_failed_pages(mock_fetch_page):
-    mock_fetch_page.side_effect = [SAMPLE_PAGE_HTML, None, SAMPLE_PAGE_HTML]
-
-    results = scrape_main(total_pages=3, delay=0)
-
-    assert len(results) == 8
-    assert mock_fetch_page.call_count == 3
-
-
-@patch("src.extract.build_page_url")
-def test_scrape_main_handles_all_invalid_urls(mock_build_url):
-    mock_build_url.return_value = None
-
-    results = scrape_main(total_pages=2, delay=0)
-
-    assert results == []
-
-
-@patch("src.extract.fetch_page", side_effect=Exception("boom"))
-def test_scrape_main_catches_unexpected_exception(mock_fetch_page):
-    results = scrape_main(total_pages=2, delay=0)
-    assert isinstance(results, list)
+def test_repeated_page_and_negative_delay(html_page):
+    session = Mock()
+    session.get.return_value.content = html_page()
+    with pytest.raises(ExtractionError):
+        extract.scrape_main(2, delay=0, session=session)
+    with pytest.raises(ExtractionError):
+        extract.scrape_main(1, delay=-1, session=session)

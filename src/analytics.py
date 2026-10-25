@@ -1,86 +1,44 @@
-"""
-analytics.py
-------------
-Analytics output (layer GOLD - serving).
-
-Modul ini mengubah data SILVER yang sudah bersih menjadi insight
-ringkas yang langsung bisa dikonsumsi stakeholder bisnis, tanpa
-mereka perlu membaca 800+ baris data mentah.
-"""
-
-import json
-import logging
-import os
-from datetime import datetime
+"""Consumer-ready CSV marts and conservative observation-to-observation changes."""
 
 import pandas as pd
 
-logger = logging.getLogger(__name__)
+from src.errors import QualityError
+from src.transform import validate_clean_data
 
 
-def generate_summary(df):
-    """
-    Menghasilkan ringkasan insight dari data produk yang sudah bersih:
-    - jumlah produk, rata-rata & median harga, rentang harga
-    - rata-rata harga per Gender dan per Size
-    - distribusi rating (rata-rata + jumlah produk rating >= 4.5)
-    - 5 produk dengan rating tertinggi
-    - distribusi jumlah produk per kategori (kata pertama pada Title,
-      mis. "T-shirt", "Hoodie", "Pants")
-    """
+def category_metrics(frame):
     try:
-        if df is None or df.empty:
-            logger.warning("Data kosong, tidak ada insight yang dapat dihasilkan.")
-            return {"generated_at": datetime.now().isoformat(), "total_products": 0}
-
-        df = df.copy()
-        df["category"] = df["Title"].astype(str).str.split().str[0]
-
-        top_rated = (
-            df.sort_values("Rating", ascending=False)
-            .head(5)[["Title", "Rating", "Price"]]
-            .to_dict(orient="records")
-        )
-
-        summary = {
-            "generated_at": datetime.now().isoformat(),
-            "total_products": int(len(df)),
-            "price_idr": {
-                "average": round(float(df["Price"].mean()), 2),
-                "median": round(float(df["Price"].median()), 2),
-                "min": round(float(df["Price"].min()), 2),
-                "max": round(float(df["Price"].max()), 2),
-            },
-            "average_price_by_gender": {
-                k: round(float(v), 2) for k, v in df.groupby("Gender")["Price"].mean().items()
-            },
-            "average_price_by_size": {
-                k: round(float(v), 2) for k, v in df.groupby("Size")["Price"].mean().items()
-            },
-            "rating": {
-                "average": round(float(df["Rating"].mean()), 2),
-                "products_rating_4_5_or_above": int((df["Rating"] >= 4.5).sum()),
-            },
-            "product_count_by_category": df["category"].value_counts().to_dict(),
-            "top_5_rated_products": top_rated,
-        }
-        logger.info(f"Analytics summary dihasilkan untuk {len(df)} produk.")
-        return summary
-    except Exception as e:
-        logger.error(f"Gagal menghasilkan analytics summary: {e}")
-        return {"generated_at": datetime.now().isoformat(), "error": str(e)}
+        validate_clean_data(frame)
+        data = frame.assign(Category=frame["Title"].str.replace(r"\s+\d+$", "", regex=True))
+        return data.groupby(["Category", "Gender"], as_index=False).agg(
+            products=("Title", "count"), min_price_idr=("Price", "min"),
+            median_price_idr=("Price", "median"), mean_price_idr=("Price", "mean"),
+            max_price_idr=("Price", "max"), mean_rating=("Rating", "mean"),
+        ).round(2)
+    except Exception as exc:
+        raise QualityError("Cannot generate category metrics") from exc
 
 
-def save_summary(summary, gold_dir, run_date=None):
-    """Menyimpan analytics summary sebagai berkas JSON ke layer GOLD."""
+def detect_changes(previous, current):
+    """Missing from a clean snapshot is an observation gap, not proven delisting."""
     try:
-        date_str = run_date or datetime.now().strftime("%Y-%m-%d")
-        os.makedirs(gold_dir, exist_ok=True)
-        file_path = os.path.join(gold_dir, f"analytics_summary_{date_str}.json")
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(summary, f, indent=2, ensure_ascii=False)
-        logger.info(f"Analytics summary (gold) disimpan: {file_path}")
-        return file_path
-    except Exception as e:
-        logger.error(f"Gagal menyimpan analytics summary: {e}")
-        return None
+        validate_clean_data(current)
+        if previous is None:
+            return current.assign(change_type="first_observed", previous_price_idr=float("nan"),
+                                  price_delta_idr=float("nan"))
+        validate_clean_data(previous)
+        joined = current.merge(previous[["Title", "Price"]], how="left", on="Title",
+                               suffixes=("", "_previous"), validate="one_to_one")
+        joined["change_type"] = "unchanged"
+        joined.loc[joined["Price_previous"].isna(), "change_type"] = "first_observed"
+        moved = joined["Price_previous"].notna() & joined["Price"].ne(joined["Price_previous"])
+        joined.loc[moved, "change_type"] = "price_changed"
+        joined["price_delta_idr"] = joined["Price"] - joined["Price_previous"]
+        observed = joined.loc[joined["change_type"].ne("unchanged")].rename(
+            columns={"Price_previous": "previous_price_idr"})
+        gaps = previous.loc[~previous["Title"].isin(current["Title"])].assign(
+            change_type="not_observed_clean", previous_price_idr=lambda d: d["Price"],
+            price_delta_idr=float("nan"))
+        return pd.concat([observed, gaps], ignore_index=True)
+    except Exception as exc:
+        raise QualityError("Cannot compare catalog observations") from exc

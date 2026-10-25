@@ -1,0 +1,134 @@
+Title,Price,Rating,Colors,Size,Gender,timestamp,source_page,source_url,rejection_reason
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:15.945530+00:00,1,https://fashion-studio.dicoding.dev/,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:15.945530+00:00,1,https://fashion-studio.dicoding.dev/,invalid_title
+Pants 16,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:15.945530+00:00,1,https://fashion-studio.dicoding.dev/,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:16.786760+00:00,2,https://fashion-studio.dicoding.dev/page2,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:16.786760+00:00,2,https://fashion-studio.dicoding.dev/page2,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:17.560819+00:00,3,https://fashion-studio.dicoding.dev/page3,invalid_title
+Pants 46,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:17.560819+00:00,3,https://fashion-studio.dicoding.dev/page3,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:17.560819+00:00,3,https://fashion-studio.dicoding.dev/page3,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:18.226064+00:00,4,https://fashion-studio.dicoding.dev/page4,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:18.226064+00:00,4,https://fashion-studio.dicoding.dev/page4,invalid_title
+Pants 76,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:18.226064+00:00,4,https://fashion-studio.dicoding.dev/page4,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:18.920495+00:00,5,https://fashion-studio.dicoding.dev/page5,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:18.920495+00:00,5,https://fashion-studio.dicoding.dev/page5,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:19.910150+00:00,6,https://fashion-studio.dicoding.dev/page6,invalid_title
+Pants 106,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:19.910150+00:00,6,https://fashion-studio.dicoding.dev/page6,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:19.910150+00:00,6,https://fashion-studio.dicoding.dev/page6,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:20.580121+00:00,7,https://fashion-studio.dicoding.dev/page7,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:20.580121+00:00,7,https://fashion-studio.dicoding.dev/page7,invalid_title
+Pants 136,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:20.580121+00:00,7,https://fashion-studio.dicoding.dev/page7,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:21.421541+00:00,8,https://fashion-studio.dicoding.dev/page8,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:21.421541+00:00,8,https://fashion-studio.dicoding.dev/page8,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:22.068652+00:00,9,https://fashion-studio.dicoding.dev/page9,invalid_title
+Pants 166,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:22.068652+00:00,9,https://fashion-studio.dicoding.dev/page9,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:22.068652+00:00,9,https://fashion-studio.dicoding.dev/page9,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:22.745230+00:00,10,https://fashion-studio.dicoding.dev/page10,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:22.745230+00:00,10,https://fashion-studio.dicoding.dev/page10,invalid_title
+Pants 196,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:22.745230+00:00,10,https://fashion-studio.dicoding.dev/page10,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:23.407792+00:00,11,https://fashion-studio.dicoding.dev/page11,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:23.407792+00:00,11,https://fashion-studio.dicoding.dev/page11,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:24.046383+00:00,12,https://fashion-studio.dicoding.dev/page12,invalid_title
+Pants 226,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:24.046383+00:00,12,https://fashion-studio.dicoding.dev/page12,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:24.046383+00:00,12,https://fashion-studio.dicoding.dev/page12,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:24.755531+00:00,13,https://fashion-studio.dicoding.dev/page13,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:24.755531+00:00,13,https://fashion-studio.dicoding.dev/page13,invalid_title
+Pants 256,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:24.755531+00:00,13,https://fashion-studio.dicoding.dev/page13,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:25.441067+00:00,14,https://fashion-studio.dicoding.dev/page14,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:25.441067+00:00,14,https://fashion-studio.dicoding.dev/page14,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:26.261110+00:00,15,https://fashion-studio.dicoding.dev/page15,invalid_title
+Pants 286,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:26.261110+00:00,15,https://fashion-studio.dicoding.dev/page15,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:26.261110+00:00,15,https://fashion-studio.dicoding.dev/page15,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:26.977406+00:00,16,https://fashion-studio.dicoding.dev/page16,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:26.977406+00:00,16,https://fashion-studio.dicoding.dev/page16,invalid_title
+Pants 316,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:26.977406+00:00,16,https://fashion-studio.dicoding.dev/page16,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:27.860033+00:00,17,https://fashion-studio.dicoding.dev/page17,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:27.860033+00:00,17,https://fashion-studio.dicoding.dev/page17,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:28.513195+00:00,18,https://fashion-studio.dicoding.dev/page18,invalid_title
+Pants 346,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:28.513195+00:00,18,https://fashion-studio.dicoding.dev/page18,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:28.513195+00:00,18,https://fashion-studio.dicoding.dev/page18,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:29.185949+00:00,19,https://fashion-studio.dicoding.dev/page19,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:29.185949+00:00,19,https://fashion-studio.dicoding.dev/page19,invalid_title
+Pants 376,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:29.185949+00:00,19,https://fashion-studio.dicoding.dev/page19,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:29.877453+00:00,20,https://fashion-studio.dicoding.dev/page20,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:29.877453+00:00,20,https://fashion-studio.dicoding.dev/page20,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:30.559675+00:00,21,https://fashion-studio.dicoding.dev/page21,invalid_title
+Pants 406,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:30.559675+00:00,21,https://fashion-studio.dicoding.dev/page21,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:30.559675+00:00,21,https://fashion-studio.dicoding.dev/page21,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:31.447266+00:00,22,https://fashion-studio.dicoding.dev/page22,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:31.447266+00:00,22,https://fashion-studio.dicoding.dev/page22,invalid_title
+Pants 436,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:31.447266+00:00,22,https://fashion-studio.dicoding.dev/page22,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:32.088475+00:00,23,https://fashion-studio.dicoding.dev/page23,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:32.088475+00:00,23,https://fashion-studio.dicoding.dev/page23,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:32.990662+00:00,24,https://fashion-studio.dicoding.dev/page24,invalid_title
+Pants 466,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:32.990662+00:00,24,https://fashion-studio.dicoding.dev/page24,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:32.990662+00:00,24,https://fashion-studio.dicoding.dev/page24,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:33.648387+00:00,25,https://fashion-studio.dicoding.dev/page25,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:33.648387+00:00,25,https://fashion-studio.dicoding.dev/page25,invalid_title
+Pants 496,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:33.648387+00:00,25,https://fashion-studio.dicoding.dev/page25,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:34.349735+00:00,26,https://fashion-studio.dicoding.dev/page26,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:34.349735+00:00,26,https://fashion-studio.dicoding.dev/page26,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:34.993852+00:00,27,https://fashion-studio.dicoding.dev/page27,invalid_title
+Pants 526,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:34.993852+00:00,27,https://fashion-studio.dicoding.dev/page27,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:34.993852+00:00,27,https://fashion-studio.dicoding.dev/page27,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:35.689574+00:00,28,https://fashion-studio.dicoding.dev/page28,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:35.689574+00:00,28,https://fashion-studio.dicoding.dev/page28,invalid_title
+Pants 556,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:35.689574+00:00,28,https://fashion-studio.dicoding.dev/page28,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:36.601800+00:00,29,https://fashion-studio.dicoding.dev/page29,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:36.601800+00:00,29,https://fashion-studio.dicoding.dev/page29,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:37.322530+00:00,30,https://fashion-studio.dicoding.dev/page30,invalid_title
+Pants 586,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:37.322530+00:00,30,https://fashion-studio.dicoding.dev/page30,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:37.322530+00:00,30,https://fashion-studio.dicoding.dev/page30,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:38.034422+00:00,31,https://fashion-studio.dicoding.dev/page31,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:38.034422+00:00,31,https://fashion-studio.dicoding.dev/page31,invalid_title
+Pants 616,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:38.034422+00:00,31,https://fashion-studio.dicoding.dev/page31,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:38.655781+00:00,32,https://fashion-studio.dicoding.dev/page32,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:38.655781+00:00,32,https://fashion-studio.dicoding.dev/page32,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:39.308163+00:00,33,https://fashion-studio.dicoding.dev/page33,invalid_title
+Pants 646,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:39.308163+00:00,33,https://fashion-studio.dicoding.dev/page33,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:39.308163+00:00,33,https://fashion-studio.dicoding.dev/page33,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:39.992920+00:00,34,https://fashion-studio.dicoding.dev/page34,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:39.992920+00:00,34,https://fashion-studio.dicoding.dev/page34,invalid_title
+Pants 676,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:39.992920+00:00,34,https://fashion-studio.dicoding.dev/page34,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:40.696825+00:00,35,https://fashion-studio.dicoding.dev/page35,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:40.696825+00:00,35,https://fashion-studio.dicoding.dev/page35,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:41.359317+00:00,36,https://fashion-studio.dicoding.dev/page36,invalid_title
+Pants 706,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:41.359317+00:00,36,https://fashion-studio.dicoding.dev/page36,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:41.359317+00:00,36,https://fashion-studio.dicoding.dev/page36,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:42.235874+00:00,37,https://fashion-studio.dicoding.dev/page37,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:42.235874+00:00,37,https://fashion-studio.dicoding.dev/page37,invalid_title
+Pants 736,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:42.235874+00:00,37,https://fashion-studio.dicoding.dev/page37,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:43.055208+00:00,38,https://fashion-studio.dicoding.dev/page38,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:43.055208+00:00,38,https://fashion-studio.dicoding.dev/page38,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:43.719434+00:00,39,https://fashion-studio.dicoding.dev/page39,invalid_title
+Pants 766,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:43.719434+00:00,39,https://fashion-studio.dicoding.dev/page39,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:43.719434+00:00,39,https://fashion-studio.dicoding.dev/page39,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:44.381687+00:00,40,https://fashion-studio.dicoding.dev/page40,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:44.381687+00:00,40,https://fashion-studio.dicoding.dev/page40,invalid_title
+Pants 796,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:44.381687+00:00,40,https://fashion-studio.dicoding.dev/page40,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:45.044235+00:00,41,https://fashion-studio.dicoding.dev/page41,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:45.044235+00:00,41,https://fashion-studio.dicoding.dev/page41,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:45.708263+00:00,42,https://fashion-studio.dicoding.dev/page42,invalid_title
+Pants 826,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:45.708263+00:00,42,https://fashion-studio.dicoding.dev/page42,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:45.708263+00:00,42,https://fashion-studio.dicoding.dev/page42,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:46.458098+00:00,43,https://fashion-studio.dicoding.dev/page43,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:46.458098+00:00,43,https://fashion-studio.dicoding.dev/page43,invalid_title
+Pants 856,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:46.458098+00:00,43,https://fashion-studio.dicoding.dev/page43,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:47.086782+00:00,44,https://fashion-studio.dicoding.dev/page44,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:47.086782+00:00,44,https://fashion-studio.dicoding.dev/page44,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:47.761963+00:00,45,https://fashion-studio.dicoding.dev/page45,invalid_title
+Pants 886,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:47.761963+00:00,45,https://fashion-studio.dicoding.dev/page45,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:47.761963+00:00,45,https://fashion-studio.dicoding.dev/page45,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:48.479705+00:00,46,https://fashion-studio.dicoding.dev/page46,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:48.479705+00:00,46,https://fashion-studio.dicoding.dev/page46,invalid_title
+Pants 916,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:48.479705+00:00,46,https://fashion-studio.dicoding.dev/page46,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:49.476771+00:00,47,https://fashion-studio.dicoding.dev/page47,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:49.476771+00:00,47,https://fashion-studio.dicoding.dev/page47,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:50.434764+00:00,48,https://fashion-studio.dicoding.dev/page48,invalid_title
+Pants 946,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:50.434764+00:00,48,https://fashion-studio.dicoding.dev/page48,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:50.434764+00:00,48,https://fashion-studio.dicoding.dev/page48,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:51.110402+00:00,49,https://fashion-studio.dicoding.dev/page49,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:51.110402+00:00,49,https://fashion-studio.dicoding.dev/page49,invalid_title
+Pants 976,Price Unavailable,Rating: Not Rated,8 Colors,Size: S,Gender: Men,2026-10-25T18:40:51.110402+00:00,49,https://fashion-studio.dicoding.dev/page49,invalid_price
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:51.780874+00:00,50,https://fashion-studio.dicoding.dev/page50,invalid_title
+Unknown Product,$100.00,Rating: ⭐ Invalid Rating / 5,5 Colors,Size: M,Gender: Men,2026-10-25T18:40:51.780874+00:00,50,https://fashion-studio.dicoding.dev/page50,invalid_title

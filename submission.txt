@@ -1,0 +1,55 @@
+Fashion Competitor Intelligence — review instructions
+
+Source: https://fashion-studio.dicoding.dev/
+Repository: https://github.com/kendrickassignment/fashion-competitor-intelligence
+Review spreadsheet: https://docs.google.com/spreadsheets/d/1lqqDHckLAKN9X9r4-topU6O4Jd9oCJIf7bEmvSzgHPE/edit
+
+Runtime: Python 3.12. Install with: python -m pip install -r requirements.txt
+Default full-catalog CSV run: python main.py
+Full three-destination run: python main.py --submission
+Offline CSV replay: python main.py --replay docs/evidence/raw.csv
+Tests: python -m pytest tests --cov --cov-report=term-missing
+Lint: python -m ruff check .
+
+Advanced criterion 1:
+- Separate src/extract.py, src/transform.py, and src/load.py modules.
+- Each sink also has its own file: load_csv.py, load_postgres.py, load_sheets.py.
+- All 50 pages and 1,000 raw records extracted, with source lineage and extraction timestamp.
+- Required Title, Price, Rating, Colors, Size, Gender fields; Price is converted at 16,000 IDR/USD.
+- Invalid/null data quarantined, title duplicates removed without using timestamp as identity.
+- Exact expected pandas dtypes and timestamp added to the clean schema.
+- Every function in the ETL modules includes error handling.
+- requirements.txt included.
+
+Advanced criterion 2:
+- products.csv contains the clean data.
+- Google Sheets Products tab contains the same clean data, with all-cell read-back verification.
+- The review spreadsheet is shared as anyone-with-link editor.
+- Real PostgreSQL persistence verified; current snapshot and idempotent history use a transaction.
+- docs/evidence/ includes actual run, quality, database, access, and test evidence.
+- The private review ZIP includes google-sheets-api.json; the public repository excludes private keys.
+
+Advanced criterion 3:
+- All tests are under tests/.
+- HTTP services are mocked; external HTTP is blocked during tests.
+- 95 tests passed in the recorded environment, including a real PostgreSQL integration test.
+- Recorded application statement and branch coverage: 100%; enforced minimum: 90%.
+- Integration test requires TEST_DATABASE_URL pointing at a dedicated disposable database.
+- Without TEST_DATABASE_URL, 94 tests pass and one explicit integration test is skipped.
+
+To reproduce all destinations:
+1. Start a PostgreSQL database (docker compose up -d --wait is provided).
+2. Set DATABASE_URL to a writable PostgreSQL connection URL.
+3. Set SPREADSHEET_ID to the review ID or a spreadsheet you control.
+4. Set GOOGLE_APPLICATION_CREDENTIALS to the absolute path of google-sheets-api.json.
+5. Share the spreadsheet with the service account client_email as editor; enable the Sheets API.
+6. Run python main.py --submission.
+
+PowerShell syntax: $env:VARIABLE_NAME = 'value'
+POSIX shell syntax: export VARIABLE_NAME='value'
+The application does not automatically read .env files.
+
+The PostgreSQL evidence is from a real local server, not a claimed public hosted deployment.
+Never use the integration test against a shared database; it removes its two test tables.
+All source products are fictional and for educational use. Final assessment belongs to the reviewer.
+Follow additional Dicoding submission-tab requirements, which were not provided with this brief.

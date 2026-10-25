@@ -1,0 +1,51 @@
+name: Catalog refresh
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 1 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalog-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Configure optional remote destinations
+        env:
+          SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -n "$SERVICE_ACCOUNT_JSON" ]; then
+            printf '%s' "$SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/google-sheets-api.json"
+            chmod 600 "$RUNNER_TEMP/google-sheets-api.json"
+          fi
+      - name: Refresh catalog
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/google-sheets-api.json
+        run: |
+          if [ -n "$DATABASE_URL" ] && [ -n "$SPREADSHEET_ID" ] && [ -f "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+            python main.py --submission --output-dir refresh-output
+          else
+            echo "Remote credentials not fully configured; running the explicit CSV profile."
+            python main.py --targets csv --output-dir refresh-output
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: catalog-${{ github.run_id }}
+          path: refresh-output/
+          retention-days: 30

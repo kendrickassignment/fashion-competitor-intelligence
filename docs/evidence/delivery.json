@@ -1,0 +1,35 @@
+{
+  "verified_at_utc": "2026-10-25T18:42:28.392762+00:00",
+  "run_id": "20261025T184013-a73aa2f4",
+  "python": "3.12.3",
+  "raw_rows": 1000,
+  "clean_rows": 867,
+  "source_pages": 50,
+  "all_pages_have_20_rows": true,
+  "null_cells": 0,
+  "duplicate_titles": 0,
+  "currency_conversion": "all clean prices equal raw USD price * 16000",
+  "pandas_dtypes": {
+    "Title": "object",
+    "Price": "float64",
+    "Rating": "float64",
+    "Colors": "int64",
+    "Size": "object",
+    "Gender": "object",
+    "timestamp": "object"
+  },
+  "clean_csv_sha256": "f2d63504671a60e338c25596e82a6ae620c27df454b0622d81c211cfbf718452",
+  "postgresql": {
+    "server_version": "18.1",
+    "current_rows": 867,
+    "history_rows": 1734,
+    "verification": "all columns and rows match clean CSV",
+    "deployment": "isolated local server"
+  },
+  "google_sheets": {
+    "spreadsheet_id": "1lqqDHckLAKN9X9r4-topU6O4Jd9oCJIf7bEmvSzgHPE",
+    "rows": 867,
+    "verification": "all cells match clean CSV",
+    "public_access": "anyone / writer"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "run_id": "20261025T184013-a73aa2f4",
+  "started_at": "2026-10-25T18:40:13.950388+00:00",
+  "status": "success",
+  "mode": "live",
+  "requested_pages": 50,
+  "requested_targets": [
+    "csv",
+    "postgresql",
+    "google_sheets"
+  ],
+  "destinations": {
+    "csv": {
+      "status": "success",
+      "rows": 867,
+      "file": "clean.csv"
+    },
+    "postgresql": {
+      "status": "success",
+      "rows": 867,
+      "table": "fashion_products",
+      "history_table": "fashion_observations"
+    },
+    "google_sheets": {
+      "status": "success",
+      "rows": 867,
+      "spreadsheet_id": "1lqqDHckLAKN9X9r4-topU6O4Jd9oCJIf7bEmvSzgHPE",
+      "tab": "Products",
+      "verified": "all cells"
+    }
+  },
+  "raw_sha256": "9d7a3f9552032459d3fd64cfc417121520b9e1e8fe22686c746cd60b9dfddfdb",
+  "quality": {
+    "raw_rows": 1000,
+    "clean_rows": 867,
+    "rejected_rows": 133,
+    "yield_ratio": 0.867,
+    "usd_to_idr": 16000,
+    "rejection_reasons": {
+      "invalid_title": 100,
+      "invalid_price": 33
+    },
+    "reason_policy": "first failing rule; duplicate check after validation"
+  },
+  "clean_sha256": "f2d63504671a60e338c25596e82a6ae620c27df454b0622d81c211cfbf718452",
+  "duration_seconds": 54.157,
+  "finished_at": "2026-10-25T18:41:08.110648+00:00"
+}

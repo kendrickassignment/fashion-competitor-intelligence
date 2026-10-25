@@ -1,11 +1,15 @@
-requests~=2.32
-beautifulsoup4~=4.12
-lxml~=5.3
-pandas~=2.2
-sqlalchemy~=2.0
-psycopg2-binary~=2.9
-google-auth~=2.36
-google-api-python-client~=2.152
-pytest~=8.3
-pytest-cov~=6.0
-pytest-mock~=3.14
+-c constraints.txt
+# Tested direct dependencies; Python 3.12.
+requests==2.32.3
+beautifulsoup4==4.12.3
+pandas==2.3.3
+numpy==2.5.3
+SQLAlchemy==2.0.40
+psycopg2-binary==2.9.11
+google-auth==2.49.1
+google-api-python-client==2.193.0
+google-auth-httplib2==0.2.0
+httplib2==0.22.0
+pytest==8.4.2
+pytest-cov==6.3.0
+ruff==0.6.6

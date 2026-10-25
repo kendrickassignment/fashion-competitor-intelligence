@@ -1,17 +1,32 @@
+# Private runtime configuration
+.env
+.env.*
+!.env.example
+*service-account*.json
+*credentials*.json
+google-sheets-api.json
+secrets/
+*.pem
+*.key
+
+# Local environments, caches, generated runs
+.venv/
 venv/
 __pycache__/
-*.pyc
+*.py[cod]
 .pytest_cache/
-.coverage
+.ruff_cache/
+.test-tmp*/
+.coverage*
+coverage*.json
+coverage.xml
+htmlcov/
+test-results*.xml
+.pipeline.lock
+data/
+refresh-output/
+*.log
+*.zip
+*.sql.dump
 
-# Berkas hasil generate pipeline (boleh di-regenerate kapan saja)
-data/bronze/*.csv
-data/silver/history/*.csv
-data/silver/latest.csv
-data/gold/*.csv
-data/gold/*.json
-logs/*.log
-products.csv
-
-# Kredensial -- JANGAN PERNAH commit kredensial asli ke repo publik
-google-sheets-api.json
+# products.csv and docs/evidence/ are intentionally versioned review artifacts.

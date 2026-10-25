@@ -1,210 +1,110 @@
-"""
-extract.py
-----------
-Tahapan EXTRACT pada ETL pipeline.
+"""Bounded, polite extraction. Never publish an incomplete catalog."""
 
-Modul ini bertanggung jawab untuk mengambil (scraping) seluruh data produk
-dari website https://fashion-studio.dicoding.dev/ (halaman 1 sampai 50).
-
-Setiap fungsi pada modul ini memiliki mekanisme penanganan kesalahan
-(error handling) berupa blok try/except agar proses ekstraksi tidak
-berhenti total ketika menemui satu kondisi yang tidak diharapkan
-(misalnya koneksi gagal, halaman tidak ditemukan, atau struktur HTML
-yang tidak terduga pada salah satu kartu produk).
-"""
-
+import hashlib
+import json
 import logging
-import os
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-logger = logging.getLogger(__name__)
+from src.errors import ExtractionError
 
 BASE_URL = "https://fashion-studio.dicoding.dev"
-TOTAL_PAGES = 50
+FIELDS = ["Title", "Price", "Rating", "Colors", "Size", "Gender"]
+logger = logging.getLogger(__name__)
 
 
-def build_page_url(page_number, base_url=BASE_URL):
-    """
-    Membangun URL untuk halaman tertentu.
-
-    Halaman 1 berada pada root URL, sedangkan halaman berikutnya
-    mengikuti pola "/page{nomor_halaman}".
-    """
+def build_session():
     try:
-        if page_number is None or page_number < 1:
-            raise ValueError(f"Nomor halaman tidak valid: {page_number}")
-        if page_number == 1:
-            return f"{base_url}/"
-        return f"{base_url}/page{page_number}"
-    except Exception as e:
-        logger.error(f"Gagal membangun URL untuk halaman {page_number}: {e}")
-        return None
+        session = requests.Session()
+        retry = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504],
+                      allowed_methods=["GET"], respect_retry_after_header=True)
+        session.mount("https://", HTTPAdapter(max_retries=retry))
+        session.headers.update({"User-Agent": "FashionResearchETL/2.0 (educational catalog research)"})
+        return session
+    except Exception as exc:
+        raise ExtractionError("Cannot initialize HTTP session") from exc
 
 
-def fetch_page(url, session=None, timeout=10):
-    """
-    Mengambil konten HTML mentah dari sebuah URL.
-
-    Mengembalikan None apabila request gagal (misalnya koneksi
-    bermasalah, timeout, atau status HTTP error) sehingga proses
-    scraping pada halaman lain tetap dapat dilanjutkan.
-    """
+def build_page_url(page_number):
     try:
-        http_client = session if session is not None else requests
-        response = http_client.get(url, timeout=timeout)
+        if type(page_number) is not int or not 1 <= page_number <= 50:
+            raise ValueError("Page must be an integer in 1..50")
+        return f"{BASE_URL}/" if page_number == 1 else f"{BASE_URL}/page{page_number}"
+    except (TypeError, ValueError) as exc:
+        raise ExtractionError("Invalid page number") from exc
+
+
+def fetching_content(url, session):
+    try:
+        response = session.get(url, timeout=(10, 30))
         response.raise_for_status()
-        return response.text
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Gagal mengambil data dari {url}: {e}")
-        return None
-    except Exception as e:
-        logger.error(f"Terjadi kesalahan tak terduga saat mengambil {url}: {e}")
-        return None
+        if not response.content:
+            raise ValueError("Empty response")
+        return response.content
+    except (requests.RequestException, ValueError) as exc:
+        raise ExtractionError("HTTP request failed or returned empty content") from exc
 
 
-def parse_product_card(card, timestamp):
-    """
-    Mengekstrak field mentah (Title, Price, Rating, Colors, Size, Gender)
-    dari satu elemen kartu produk (div.collection-card).
-
-    Nilai dikembalikan dalam bentuk teks mentah apa adanya (belum
-    dibersihkan/ditransformasi) sesuai tugas tahapan extract.
-    """
+def parse_page(html, timestamp, page_number):
+    """Use labels, not paragraph positions; preserve bad values for quarantine."""
     try:
-        title_tag = card.find("h3", class_="product-title")
-        title = title_tag.get_text(strip=True) if title_tag else None
-
-        # Price bisa muncul dalam dua bentuk tag HTML berbeda:
-        # <div class="price-container"><span class="price">$xx.xx</span></div>
-        # atau <p class="price">Price Unavailable</p>
-        price = None
-        price_container = card.find("div", class_="price-container")
-        if price_container is not None:
-            price_span = price_container.find("span", class_="price")
-            if price_span is not None:
-                price = price_span.get_text(strip=True)
-        if price is None:
-            price_tag = card.find("p", class_="price")
-            if price_tag is not None:
-                price = price_tag.get_text(strip=True)
-
-        details = card.find("div", class_="product-details")
-        info_paragraphs = details.find_all("p", style=True) if details is not None else []
-
-        rating = info_paragraphs[0].get_text(strip=True) if len(info_paragraphs) > 0 else None
-        colors = info_paragraphs[1].get_text(strip=True) if len(info_paragraphs) > 1 else None
-        size = info_paragraphs[2].get_text(strip=True) if len(info_paragraphs) > 2 else None
-        gender = info_paragraphs[3].get_text(strip=True) if len(info_paragraphs) > 3 else None
-
-        return {
-            "Title": title,
-            "Price": price,
-            "Rating": rating,
-            "Colors": colors,
-            "Size": size,
-            "Gender": gender,
-            "timestamp": timestamp,
-        }
-    except Exception as e:
-        logger.error(f"Gagal mem-parsing salah satu kartu produk: {e}")
-        return None
-
-
-def parse_page(html, timestamp):
-    """
-    Mem-parsing satu halaman HTML penuh dan mengembalikan list of dict
-    berisi data mentah seluruh kartu produk pada halaman tersebut.
-    """
-    try:
-        if not html:
-            raise ValueError("Konten HTML kosong, tidak dapat di-parsing.")
-        soup = BeautifulSoup(html, "html.parser")
-        cards = soup.find_all("div", class_="collection-card")
-        products = []
+        cards = BeautifulSoup(html, "html.parser").select(".collection-card")
+        if len(cards) != 20:
+            raise ValueError("Expected exactly 20 product cards")
+        records = []
         for card in cards:
-            product = parse_product_card(card, timestamp)
-            if product is not None:
-                products.append(product)
-        return products
-    except Exception as e:
-        logger.error(f"Gagal mem-parsing halaman: {e}")
-        return []
+            title, price = card.select_one(".product-title"), card.select_one(".price")
+            record = dict.fromkeys(FIELDS)
+            record.update(Title=title.get_text(" ", strip=True) if title else None,
+                          Price=price.get_text(" ", strip=True) if price else None)
+            for paragraph in card.select(".product-details p"):
+                text = paragraph.get_text(" ", strip=True)
+                if text.startswith("Rating:"):
+                    record["Rating"] = text
+                elif text.endswith((" Colors", " Color")):
+                    record["Colors"] = text
+                elif text.startswith("Size:"):
+                    record["Size"] = text
+                elif text.startswith("Gender:"):
+                    record["Gender"] = text
+            record.update(timestamp=timestamp, source_page=page_number,
+                          source_url=build_page_url(page_number))
+            records.append(record)
+        return records
+    except Exception as exc:
+        raise ExtractionError(f"Source structure invalid on page {page_number}") from exc
 
 
-def scrape_main(total_pages=TOTAL_PAGES, delay=0.5, session=None, base_url=BASE_URL):
-    """
-    Fungsi utama tahapan extract.
-
-    Melakukan iterasi pengambilan data dari halaman 1 sampai
-    `total_pages`, lalu mengembalikan seluruh data mentah dalam
-    bentuk list of dict yang siap diolah pada tahapan transform.
-    """
-    all_products = []
-    timestamp = datetime.now().isoformat()
+def scrape_main(total_pages=50, delay=0.25, session=None):
+    """Return every requested page or raise; injected sessions remain caller-owned."""
+    owned = session is None
     try:
-        for page_number in range(1, total_pages + 1):
-            url = build_page_url(page_number, base_url=base_url)
-            if not url:
-                logger.warning(f"Melewati halaman {page_number} karena URL tidak valid.")
-                continue
-
-            html = fetch_page(url, session=session)
-            if not html:
-                logger.warning(f"Melewati halaman {page_number} karena gagal diambil.")
-                continue
-
-            products = parse_page(html, timestamp)
-            all_products.extend(products)
-
-            if delay:
+        build_page_url(total_pages)
+        if delay < 0:
+            raise ValueError("Delay cannot be negative")
+        session = build_session() if owned else session
+        records, fingerprints = [], set()
+        for page in range(1, total_pages + 1):
+            html = fetching_content(build_page_url(page), session)
+            batch = parse_page(html, datetime.now(timezone.utc).isoformat(), page)
+            content = [{field: row[field] for field in FIELDS} for row in batch]
+            fingerprint = hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest()
+            if fingerprint in fingerprints:
+                raise ExtractionError(f"Repeated page payload on page {page}")
+            fingerprints.add(fingerprint)
+            records.extend(batch)
+            logger.info("extracted page=%s/%s rows=%s", page, total_pages, len(records))
+            if page < total_pages:
                 time.sleep(delay)
-
-        logger.info(
-            f"Ekstraksi selesai: {len(all_products)} data produk berhasil diambil "
-            f"dari {total_pages} halaman."
-        )
-        return all_products
-    except Exception as e:
-        logger.error(f"Terjadi kesalahan pada proses scraping utama: {e}")
-        return all_products
-
-
-def save_raw_snapshot(raw_data, bronze_dir, run_timestamp=None):
-    """
-    Menyimpan hasil ekstraksi mentah (sebelum dibersihkan) ke layer
-    BRONZE sebagai satu snapshot per run.
-
-    Bronze bersifat immutable dan append-only: setiap run akan
-    membuat berkas baru dengan nama berbasis timestamp, file lama
-    tidak pernah ditimpa. Tujuannya agar selalu ada "source of truth"
-    mentah yang bisa dipakai untuk reprocessing ulang kalau suatu
-    saat ditemukan bug pada logika transform.
-
-    Mengembalikan path file yang berhasil ditulis, atau None jika gagal.
-    """
-    try:
-        if not raw_data:
-            logger.warning("Tidak ada data mentah untuk disimpan ke layer bronze.")
-            return None
-
-        os.makedirs(bronze_dir, exist_ok=True)
-        ts = run_timestamp or datetime.now().strftime("%Y%m%dT%H%M%S")
-        file_path = os.path.join(bronze_dir, f"raw_snapshot_{ts}.csv")
-
-        df = pd.DataFrame(raw_data)
-        df.to_csv(file_path, index=False)
-        logger.info(f"Snapshot mentah (bronze) disimpan: {file_path} ({len(df)} baris).")
-        return file_path
-    except Exception as e:
-        logger.error(f"Gagal menyimpan snapshot bronze: {e}")
-        return None
-
-
-if __name__ == "__main__":
-    data = scrape_main()
-    print(f"Total data mentah yang diekstrak: {len(data)}")
+        return pd.DataFrame(records)
+    except Exception as exc:
+        raise ExtractionError("Catalog extraction failed; no partial dataset published") from exc
+    finally:
+        if owned and session is not None:
+            session.close()

@@ -1,0 +1,12 @@
+{
+  "raw_rows": 1000,
+  "clean_rows": 867,
+  "rejected_rows": 133,
+  "yield_ratio": 0.867,
+  "usd_to_idr": 16000,
+  "rejection_reasons": {
+    "invalid_title": 100,
+    "invalid_price": 33
+  },
+  "reason_policy": "first failing rule; duplicate check after validation"
+}

@@ -1,267 +1,124 @@
-"""
-test_load.py
-------------
-Unit test untuk modul utils/load.py.
-
-Seluruh interaksi dengan PostgreSQL dan Google Sheets API di-mock
-sehingga pengujian tidak memerlukan database maupun kredensial
-sungguhan.
-"""
-
-import sys
-import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import Mock
 
 import pandas as pd
 import pytest
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from src.load import (
-    save_to_csv,
-    get_postgresql_engine,
-    save_to_postgresql,
-    get_google_sheets_service,
-    save_to_google_sheets,
-    save_summary_to_google_sheets,
-    load_main,
-)
-
-
-@pytest.fixture
-def sample_df():
-    return pd.DataFrame(
-        [
-            {
-                "Title": "T-shirt 2",
-                "Price": 1634400.0,
-                "Rating": 3.9,
-                "Colors": 3,
-                "Size": "M",
-                "Gender": "Women",
-                "timestamp": "2026-06-17T00:00:00",
-            }
-        ]
-    )
-
-
-# ---------------------------------------------------------------------
-# save_to_csv
-# ---------------------------------------------------------------------
-
-def test_save_to_csv_success(sample_df, tmp_path):
-    file_path = tmp_path / "products.csv"
-    result = save_to_csv(sample_df, str(file_path))
-
-    assert result is True
-    assert file_path.exists()
-    content = file_path.read_text()
-    assert "T-shirt 2" in content
-
-
-def test_save_to_csv_failure_returns_false(sample_df):
-    # Path direktori yang tidak ada dan tidak dapat dibuat otomatis oleh pandas.
-    result = save_to_csv(sample_df, "/path/does/not/exist/products.csv")
-    assert result is False
-
-
-# ---------------------------------------------------------------------
-# PostgreSQL
-# ---------------------------------------------------------------------
-
-@patch("sqlalchemy.create_engine")
-def test_get_postgresql_engine_success(mock_create_engine):
-    mock_engine = MagicMock()
-    mock_create_engine.return_value = mock_engine
-
-    engine = get_postgresql_engine("postgresql+psycopg2://user:pass@localhost:5432/db")
-
-    assert engine is mock_engine
-    mock_create_engine.assert_called_once()
-
-
-@patch("sqlalchemy.create_engine", side_effect=Exception("connection refused"))
-def test_get_postgresql_engine_failure_returns_none(mock_create_engine):
-    engine = get_postgresql_engine("postgresql+psycopg2://bad-url")
-    assert engine is None
-
-
-@patch("src.load.get_postgresql_engine")
-def test_save_to_postgresql_success(mock_get_engine, sample_df):
-    mock_engine = MagicMock()
-    mock_get_engine.return_value = mock_engine
-
-    with patch.object(pd.DataFrame, "to_sql") as mock_to_sql:
-        result = save_to_postgresql(sample_df, "postgresql+psycopg2://user:pass@localhost/db")
-
-    assert result is True
-    mock_to_sql.assert_called_once()
-    mock_engine.dispose.assert_called_once()
-
-
-@patch("src.load.get_postgresql_engine")
-def test_save_to_postgresql_handles_none_engine(mock_get_engine, sample_df):
-    mock_get_engine.return_value = None
-
-    result = save_to_postgresql(sample_df, "postgresql+psycopg2://user:pass@localhost/db")
-
-    assert result is False
-
-
-@patch("src.load.get_postgresql_engine")
-def test_save_to_postgresql_handles_to_sql_exception(mock_get_engine, sample_df):
-    mock_engine = MagicMock()
-    mock_get_engine.return_value = mock_engine
-
-    with patch.object(pd.DataFrame, "to_sql", side_effect=Exception("insert failed")):
-        result = save_to_postgresql(sample_df, "postgresql+psycopg2://user:pass@localhost/db")
-
-    assert result is False
-    mock_engine.dispose.assert_called_once()
-
-
-# ---------------------------------------------------------------------
-# Google Sheets
-# ---------------------------------------------------------------------
-
-@patch("googleapiclient.discovery.build")
-@patch("google.oauth2.service_account.Credentials.from_service_account_file")
-def test_get_google_sheets_service_success(mock_from_file, mock_build):
-    mock_creds = MagicMock()
-    mock_from_file.return_value = mock_creds
-    mock_service = MagicMock()
-    mock_build.return_value = mock_service
-
-    service = get_google_sheets_service("fake-credentials.json")
-
-    assert service is mock_service
-    mock_from_file.assert_called_once()
-    mock_build.assert_called_once_with("sheets", "v4", credentials=mock_creds)
-
-
-@patch(
-    "google.oauth2.service_account.Credentials.from_service_account_file",
-    side_effect=FileNotFoundError("credentials file not found"),
-)
-def test_get_google_sheets_service_handles_missing_file(mock_from_file):
-    service = get_google_sheets_service("does-not-exist.json")
-    assert service is None
-
-
-@patch("src.load.get_google_sheets_service")
-def test_save_to_google_sheets_success(mock_get_service, sample_df):
-    mock_service = MagicMock()
-    mock_get_service.return_value = mock_service
-
-    result = save_to_google_sheets(sample_df, "fake-spreadsheet-id")
-
-    assert result is True
-    mock_service.spreadsheets.return_value.values.return_value.update.assert_called_once()
-
-
-@patch("src.load.get_google_sheets_service")
-def test_save_to_google_sheets_handles_none_service(mock_get_service, sample_df):
-    mock_get_service.return_value = None
-
-    result = save_to_google_sheets(sample_df, "fake-spreadsheet-id")
-
-    assert result is False
-
-
-@patch("src.load.get_google_sheets_service")
-def test_save_to_google_sheets_handles_api_exception(mock_get_service, sample_df):
-    mock_service = MagicMock()
-    mock_service.spreadsheets.side_effect = Exception("API quota exceeded")
-    mock_get_service.return_value = mock_service
-
-    result = save_to_google_sheets(sample_df, "fake-spreadsheet-id")
-
-    assert result is False
-
-
-@patch("src.load.get_google_sheets_service")
-def test_save_summary_to_google_sheets_success(mock_get_service):
-    mock_service = MagicMock()
-    mock_get_service.return_value = mock_service
-
-    summary = {"total_products": 867, "average_price": 4804335.32}
-    result = save_summary_to_google_sheets(summary, "fake-spreadsheet-id")
-
-    assert result is True
-    mock_service.spreadsheets.return_value.values.return_value.update.assert_called_once()
-
-
-@patch("src.load.get_google_sheets_service")
-def test_save_summary_to_google_sheets_handles_none_service(mock_get_service):
-    mock_get_service.return_value = None
-
-    result = save_summary_to_google_sheets({"total_products": 867}, "fake-spreadsheet-id")
-
-    assert result is False
-
-
-@patch("src.load.get_google_sheets_service")
-def test_save_summary_to_google_sheets_handles_api_exception(mock_get_service):
-    mock_service = MagicMock()
-    mock_service.spreadsheets.side_effect = Exception("API quota exceeded")
-    mock_get_service.return_value = mock_service
-
-    result = save_summary_to_google_sheets({"total_products": 867}, "fake-spreadsheet-id")
-
-    assert result is False
-
-
-# ---------------------------------------------------------------------
-# load_main
-# ---------------------------------------------------------------------
-
-@patch("src.load.save_to_google_sheets", return_value=True)
-@patch("src.load.save_to_postgresql", return_value=True)
-@patch("src.load.save_to_csv", return_value=True)
-def test_load_main_saves_to_all_three_repositories(mock_csv, mock_pg, mock_gsheet, sample_df):
-    results = load_main(
-        sample_df,
-        csv_path="products.csv",
-        db_url="postgresql+psycopg2://user:pass@localhost/db",
-        spreadsheet_id="fake-id",
-    )
-
-    assert results["csv"] is True
-    assert results["postgresql"] is True
-    assert results["google_sheets"] is True
-    mock_csv.assert_called_once()
-    mock_pg.assert_called_once()
-    mock_gsheet.assert_called_once()
-
-
-@patch("src.load.save_summary_to_google_sheets", return_value=True)
-@patch("src.load.save_to_google_sheets", return_value=True)
-@patch("src.load.save_to_postgresql", return_value=True)
-@patch("src.load.save_to_csv", return_value=True)
-def test_load_main_pushes_summary_to_google_sheets_when_provided(
-    mock_csv, mock_pg, mock_gsheet, mock_gsheet_summary, sample_df
-):
-    results = load_main(
-        sample_df,
-        csv_path="products.csv",
-        spreadsheet_id="fake-id",
-        summary={"total_products": 867},
-    )
-
-    assert results["google_sheets_summary"] is True
-    mock_gsheet_summary.assert_called_once()
-
-
-@patch("src.load.save_to_csv", return_value=True)
-def test_load_main_only_saves_csv_when_no_other_config_given(mock_csv, sample_df):
-    results = load_main(sample_df, csv_path="products.csv")
-
-    assert results["csv"] is True
-    assert results["postgresql"] is None
-    assert results["google_sheets"] is None
-
-
-@patch("src.load.save_to_csv", side_effect=Exception("unexpected failure"))
-def test_load_main_handles_unexpected_exception(mock_csv, sample_df):
-    results = load_main(sample_df, csv_path="products.csv")
-    assert isinstance(results, dict)
+from sqlalchemy import create_engine
+
+from config import Settings
+from src import io, load, load_csv, load_postgres, load_sheets
+from src.errors import LoadError
+
+
+def test_atomic_csv_roundtrip(clean, tmp_path):
+    path = tmp_path / "nested" / "products.csv"
+    assert load_csv.save_to_csv(clean, path)["rows"] == 1
+    pd.testing.assert_frame_equal(pd.read_csv(path), clean)
+    with pytest.raises(LoadError):
+        load_csv.save_to_csv(clean, tmp_path / "wrong.json")
+    with pytest.raises(LoadError):
+        load_csv.save_to_csv(pd.DataFrame(), path)
+
+
+def test_failed_replace_preserves_old_file_and_cleans_temp(tmp_path, monkeypatch):
+    path = tmp_path / "products.csv"
+    path.write_text("last good", encoding="utf-8")
+    monkeypatch.setattr(io.os, "replace", Mock(side_effect=PermissionError))
+    with pytest.raises(LoadError):
+        io.atomic_write(path, "new")
+    assert path.read_text() == "last good"
+    assert list(tmp_path.iterdir()) == [path]
+    with pytest.raises(LoadError):
+        io.write_json(path, {"invalid": float("nan")})
+
+
+def test_json_write(tmp_path):
+    io.write_json(tmp_path / "report.json", {"rows": 1})
+    assert '"rows": 1' in (tmp_path / "report.json").read_text()
+
+
+def test_unwritable_parent_is_a_load_error(tmp_path):
+    parent = tmp_path / "a-file"
+    parent.write_text("occupied")
+    with pytest.raises(LoadError):
+        io.atomic_write(parent / "child.csv", "data")
+
+
+def test_postgresql_transaction_and_readback(clean, monkeypatch):
+    engine = Mock()
+    engine.dialect.name = "postgresql"
+    connection = engine.begin.return_value.__enter__.return_value if hasattr(
+        engine.begin.return_value, "__enter__") else Mock()
+    from unittest.mock import MagicMock
+    engine.begin.return_value = MagicMock()
+    engine.begin.return_value.__enter__.return_value = connection
+    connection.scalar.return_value = len(clean)
+    monkeypatch.setattr(load_postgres, "create_engine", Mock(return_value=engine))
+    monkeypatch.setattr(load_postgres.MetaData, "create_all", Mock())
+    result = load_postgres.save_to_postgresql(clean, "postgresql://unused")
+    assert result["rows"] == 1
+    assert connection.execute.call_count == 6
+    engine.dispose.assert_called_once()
+    connection.scalar.return_value = 0
+    with pytest.raises(LoadError):
+        load_postgres.save_to_postgresql(clean, engine=engine)
+
+
+def test_postgres_rejects_other_repository_and_connect_failure(clean, monkeypatch):
+    engine = create_engine("sqlite://")
+    with pytest.raises(LoadError):
+        load_postgres.save_to_postgresql(clean, engine=engine)
+    monkeypatch.setattr(load_postgres, "create_engine", Mock(side_effect=OSError("secret")))
+    with pytest.raises(LoadError, match="PostgreSQL load failed"):
+        load_postgres.save_to_postgresql(clean, "postgresql://unused")
+    monkeypatch.setattr(load_postgres, "MetaData", Mock(side_effect=ValueError))
+    with pytest.raises(LoadError):
+        load_postgres.product_tables()
+
+
+def test_sheet_create_update_literal_types_and_no_clear(clean, sheet_service):
+    result = load_sheets.save_to_google_sheets(clean, "id", service=sheet_service)
+    assert result["verified"] == "all cells"
+    body = sheet_service.spreadsheets().batchUpdate.call_args.kwargs["body"]
+    assert "addSheet" in body["requests"][0]
+    cells = body["requests"][1]["updateCells"]["rows"][1]["values"]
+    assert cells[1]["userEnteredValue"] == {"numberValue": 1634400.0}
+    assert cells[0]["userEnteredValue"] == {"stringValue": "T-shirt 2"}
+    metadata = {"sheets": [{"properties": {"sheetId": 7, "title": "Products"}}]}
+    requests, _ = load_sheets.build_sheet_requests(clean, metadata)
+    assert requests[0]["updateSheetProperties"]["properties"]["gridProperties"]["rowCount"] == 2
+    assert not any("clear" in str(request).lower() for request in requests)
+    sheet_service.close.assert_not_called()
+
+
+@pytest.mark.parametrize("failure", ["write", "readback", "missing_id", "credentials"])
+def test_sheet_failure(clean, sheet_service, failure):
+    api = sheet_service.spreadsheets()
+    if failure == "write":
+        api.batchUpdate.return_value.execute.side_effect = RuntimeError("503")
+    elif failure == "readback":
+        api.values.return_value.get.return_value.execute.return_value = {"values": []}
+    with pytest.raises(LoadError):
+        load_sheets.save_to_google_sheets(clean, "" if failure == "missing_id" else "id",
+                                         credentials_file="absent.json",
+                                         service=None if failure == "credentials" else sheet_service)
+
+
+def test_sheet_real_client_lifecycle_is_mocked(clean, sheet_service, monkeypatch):
+    monkeypatch.setattr(load_sheets.service_account.Credentials, "from_service_account_file", Mock())
+    monkeypatch.setattr(load_sheets, "build", Mock(return_value=sheet_service))
+    load_sheets.save_to_google_sheets(clean, "id", "local-key.json")
+    sheet_service.close.assert_called_once()
+    with pytest.raises(LoadError):
+        load_sheets.build_sheet_requests(clean, {}, tab_name="")
+
+
+def test_dispatch_attempts_all_targets_and_redacts_error(clean, monkeypatch, tmp_path):
+    monkeypatch.setattr(load, "save_to_postgresql", Mock(side_effect=RuntimeError("password=secret")))
+    monkeypatch.setattr(load, "save_to_google_sheets", Mock(return_value={"status": "success"}))
+    settings = Settings(targets=("csv", "postgresql", "google_sheets"))
+    result = load.load_main(clean, settings, tmp_path / "out.csv")
+    assert result["postgresql"] == {"status": "failed", "error_type": "RuntimeError"}
+    assert result["google_sheets"]["status"] == "success"
+    assert "secret" not in str(result)
+    with pytest.raises(LoadError):
+        load.load_main(clean, None, tmp_path / "out.csv")
